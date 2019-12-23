@@ -1,0 +1,2 @@
+include ':app', ':cameralibrary'
+rootProject.name='CameraExtend'
