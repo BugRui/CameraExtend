@@ -41,6 +41,4 @@ dependencies {
     implementation project(path: ':cameralibrary')
     //图片加载
     implementation 'com.github.bumptech.glide:glide:4.10.0'
-    //动态权限
-    implementation 'com.github.BugRui:AndroidPermission:1.0.0'
 }
