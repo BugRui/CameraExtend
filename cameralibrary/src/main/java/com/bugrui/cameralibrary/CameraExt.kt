@@ -261,6 +261,7 @@ fun FragmentActivity.openGallery(
     maxSelectNum: Int = 1,                  //最大图片选择数量
     minSelectNum: Int = 1,                  //最小图片选择数量
     cameraTheme: CameraTheme? = null,       //相册样式
+    isOriginalControl: Boolean = true,      //是否显示原图控制按钮，如果用户勾选了 压缩、裁剪功能将会失效
     compress: CameraCompress? = null,       //压缩
     crop: CameraCrop? = null,               //裁剪
     isGif: Boolean = false,                 //是否显示gif图片
@@ -276,6 +277,7 @@ fun FragmentActivity.openGallery(
                 .theme(R.style.picture_white_style)
                 .isGif(isGif)
                 .loadImageEngine(engine)
+                .isOriginalImageControl(isOriginalControl)
                 .setLanguage(language)
                 .setCameraTheme(cameraTheme)
                 .setCompress(compress)
@@ -295,6 +297,7 @@ fun Fragment.openGallery(
     maxSelectNum: Int = 1,                  //最大图片选择数量
     minSelectNum: Int = 1,                  //最小图片选择数量
     cameraTheme: CameraTheme? = null,       //相册样式
+    isOriginalControl: Boolean = true,      //是否显示原图控制按钮，如果用户勾选了 压缩、裁剪功能将会失效
     compress: CameraCompress? = null,       //压缩
     crop: CameraCrop? = null,               //裁剪
     isGif: Boolean = false,                 //是否显示gif图片
@@ -310,6 +313,7 @@ fun Fragment.openGallery(
                 .theme(R.style.picture_white_style)
                 .isGif(isGif)
                 .loadImageEngine(engine)
+                .isOriginalImageControl(isOriginalControl)
                 .setLanguage(language)
                 .setCameraTheme(cameraTheme)
                 .setCompress(compress)
