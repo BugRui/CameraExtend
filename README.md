@@ -2,4 +2,4 @@
 初次提交
 
 
-implementation 'com.github.BugRui:CameraExtend:Tag'
+implementation 'com.github.BugRui:CameraExtend:v1.0.0'
