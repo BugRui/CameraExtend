@@ -68,6 +68,31 @@ implementation 'com.github.BugRui:CameraExtend:v1.0.3'
 )
  
 ```
+## 拍照可选参数
+```
+  requestCode: Int,                       //requestCode
+  compress: CameraCompress? = null,       //压缩
+  crop: CameraCrop? = null,               //裁剪
+  isGif: Boolean = false,                 //是否显示gif图片
+  language: Int = LanguageConfig.CHINESE  //设置语言，默认中文
+
+```
+
+## 相册选择可选参数
+```
+ requestCode: Int,                       //requestCode
+ engine: ImageEngine,                    //图片加载框架
+ isCamera: Boolean = false,              //是否显示拍照按钮
+ maxSelectNum: Int = 1,                  //最大图片选择数量
+ minSelectNum: Int = 1,                  //最小图片选择数量
+ cameraTheme: CameraTheme? = null,       //相册样式
+ compress: CameraCompress? = null,       //压缩
+ crop: CameraCrop? = null,               //裁剪
+ isGif: Boolean = false,                 //是否显示gif图片
+ language: Int = LanguageConfig.CHINESE  //设置语言，默认中文
+
+```
+
 ## 主题可选参数
 ```
 data class CameraTheme(
