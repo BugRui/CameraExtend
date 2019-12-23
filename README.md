@@ -30,7 +30,7 @@ implementation 'com.github.BugRui:CameraExtend:v1.0.1'
  or
  
  openCamera(
-                10011,
+                10086,
 		//使用压缩 
                 compress = CameraCompress(
                     isCompress = true
@@ -44,6 +44,28 @@ implementation 'com.github.BugRui:CameraExtend:v1.0.1'
 ```
 ## 相册选择 
 ```
- openGallery(10011, engine = GlideEngine())
+ openGallery(10086, engine = GlideEngine())
+ 
+ or
+ 
+ openGallery(
+                    10086,
+		    //是否开启拍照按钮
+                    isCamera = true,
+		    //列表图片加载器
+                    engine = GlideEngine(),
+		    //相册主题
+                    cameraTheme = CameraTheme(
+                        theme = pictureCameraThemeWhite
+                    ),
+		    //压缩
+                    compress = CameraCompress(
+                        isCompress = true
+                    ),
+		    //裁剪
+                    crop = CameraCrop(
+                        isCrop = true
+                    )
+                )
  
 ```
