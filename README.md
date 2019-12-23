@@ -25,21 +25,21 @@ implementation 'com.github.BugRui:CameraExtend:v1.0.1'
 ## 相机拍照 
 #### kotlin use
 ```
- openCamera(10086)  //直接拍照 Directly take photos
+ openCamera(10086)  //直接拍照 
  
  or
  
  openCamera(
-                10086,
-		//使用压缩 
-                compress = CameraCompress(
-                    isCompress = true
-                ),
-		//使用裁剪
-                crop = CameraCrop(
-                    isCrop = true
-                )
-            )
+        10086,
+	//使用压缩 
+        compress = CameraCompress(
+            isCompress = true
+        ),
+	//使用裁剪
+        crop = CameraCrop(
+            isCrop = true
+        )
+ )
 
 ```
 ## 相册选择 
@@ -49,23 +49,23 @@ implementation 'com.github.BugRui:CameraExtend:v1.0.1'
  or
  
  openGallery(
-                    10086,
-		    //是否开启拍照按钮
-                    isCamera = true,
-		    //列表图片加载器
-                    engine = GlideEngine(),
-		    //相册主题
-                    cameraTheme = CameraTheme(
-                        theme = pictureCameraThemeWhite
-                    ),
-		    //压缩
-                    compress = CameraCompress(
-                        isCompress = true
-                    ),
-		    //裁剪
-                    crop = CameraCrop(
-                        isCrop = true
-                    )
-                )
+          10086,
+	  //是否开启拍照按钮
+          isCamera = true,
+	  //列表图片加载器
+          engine = GlideEngine(),
+	  //相册主题
+          cameraTheme = CameraTheme(
+              theme = pictureCameraThemeWhite
+          ),
+	  //压缩
+          compress = CameraCompress(
+              isCompress = true
+          ),
+	  //裁剪
+          crop = CameraCrop(
+              isCrop = true
+          )
+)
  
 ```
