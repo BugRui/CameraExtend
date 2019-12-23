@@ -16,7 +16,7 @@ allprojects {
 ```
 implementation 'com.github.BugRui:CameraExtend:v1.0.1'
 ```
-#### Step 3. Need to be in AndroidManifest.xml add
+#### Step 3. Need to be in AndroidManifest.xml add permission
 ```
  <uses-permission android:name="android.permission.CAMERA" />
  <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" /> 
