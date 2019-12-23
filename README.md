@@ -1,6 +1,6 @@
 # CameraExtend  
 ## Android 相机拍照，相册选择 Camera to take pictures ,Photo album to choose 
-基于PictureSelector扩展封装，使用方式更加便捷舒适
+基于PictureSelector扩展封装，使用方式更加便捷舒适,已封装了权限申请框架PermissionsDispatcher,调用拍照无需再去自己调用申请权限
 
 ### 集成
 #### Step 1. Add the JitPack repository to your build file
