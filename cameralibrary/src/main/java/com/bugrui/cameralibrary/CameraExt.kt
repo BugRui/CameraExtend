@@ -215,14 +215,12 @@ fun FragmentActivity.openCamera(
     requestCode: Int,                       //requestCode
     compress: CameraCompress? = null,       //压缩
     crop: CameraCrop? = null,               //裁剪
-    isGif: Boolean = false,                 //是否显示gif图片
     language: Int = LanguageConfig.CHINESE  //设置语言，默认中文
 ) {
     permissionCheck(cameraAndStoragePermissions, object : OnPermissionsTaskListener() {
         override fun onPermissionsTask() {
             PictureSelector.create(this@openCamera)
                 .openCamera(PictureMimeType.ofImage())
-                .isGif(isGif)
                 .setLanguage(language)
                 .setCompress(compress)
                 .setCrop(crop)
@@ -239,14 +237,12 @@ fun Fragment.openCamera(
     requestCode: Int,                       //requestCode
     compress: CameraCompress? = null,       //压缩
     crop: CameraCrop? = null,               //裁剪
-    isGif: Boolean = false,                 //是否显示gif图片
     language: Int = LanguageConfig.CHINESE  //设置语言，默认中文
 ) {
     permissionCheck(cameraAndStoragePermissions, object : OnPermissionsTaskListener() {
         override fun onPermissionsTask() {
             PictureSelector.create(this@openCamera)
                 .openCamera(PictureMimeType.ofImage())
-                .isGif(isGif)
                 .setLanguage(language)
                 .setCompress(compress)
                 .setCrop(crop)
