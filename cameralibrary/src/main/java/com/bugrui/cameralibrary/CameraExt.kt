@@ -51,7 +51,7 @@ data class CameraTheme(
      * pictureCameraThemeQQ QQ数字风格样式
      * pictureCameraThemeSina 新浪微博样式
      * pictureCameraThemeWeChat 仿微信样式
-     *
+     * 其他自定义样式请直接传入R.style.xxxxxx
      */
     val theme: Int = -1,
     /**
@@ -61,7 +61,6 @@ data class CameraTheme(
     val pictureStyle: PictureParameterStyle? = null,
     /**
      * cropPictureStyle动态自定义裁剪主题
-     * 注意：此方法最好不要与.theme();同时存在， 二选一
      */
     val cropPictureStyle: PictureCropParameterStyle? = null,
     /**
@@ -83,7 +82,7 @@ fun PictureSelectionModel.setCameraTheme(cameraTheme: CameraTheme? = null): Pict
                     pictureCameraThemeQQ -> R.style.picture_QQ_style
                     pictureCameraThemeSina -> R.style.picture_Sina_style
                     pictureCameraThemeWeChat -> R.style.picture_WeChat_style
-                    else -> R.style.picture_white_style
+                    else -> it.theme
                 }
             )
         }
@@ -213,6 +212,7 @@ fun PictureSelectionModel.setCrop(crop: CameraCrop? = null): PictureSelectionMod
  */
 fun FragmentActivity.openCamera(
     requestCode: Int,                       //requestCode
+    cameraTheme: CameraTheme? = null,       //相册样式
     compress: CameraCompress? = null,       //压缩
     crop: CameraCrop? = null,               //裁剪
     language: Int = LanguageConfig.CHINESE  //设置语言，默认中文
@@ -222,6 +222,7 @@ fun FragmentActivity.openCamera(
             PictureSelector.create(this@openCamera)
                 .openCamera(PictureMimeType.ofImage())
                 .setLanguage(language)
+                .setCameraTheme(cameraTheme)
                 .setCompress(compress)
                 .setCrop(crop)
                 .forResult(requestCode)
@@ -235,6 +236,7 @@ fun FragmentActivity.openCamera(
  */
 fun Fragment.openCamera(
     requestCode: Int,                       //requestCode
+    cameraTheme: CameraTheme? = null,       //相册样式
     compress: CameraCompress? = null,       //压缩
     crop: CameraCrop? = null,               //裁剪
     language: Int = LanguageConfig.CHINESE  //设置语言，默认中文
@@ -244,6 +246,7 @@ fun Fragment.openCamera(
             PictureSelector.create(this@openCamera)
                 .openCamera(PictureMimeType.ofImage())
                 .setLanguage(language)
+                .setCameraTheme(cameraTheme)
                 .setCompress(compress)
                 .setCrop(crop)
                 .forResult(requestCode)
