@@ -13,7 +13,7 @@ allprojects {
 ```
 #### Step 2. Add the dependency
 ```
-implementation 'com.github.BugRui:CameraExtend:v1.0.2'
+implementation 'com.github.BugRui:CameraExtend:v1.0.3'
 ```
 #### Step 3. Need to be in AndroidManifest.xml add permission
 ```
@@ -68,6 +68,32 @@ implementation 'com.github.BugRui:CameraExtend:v1.0.2'
 )
  
 ```
+## 拍照可选参数
+```
+  requestCode: Int,                       //requestCode
+  compress: CameraCompress? = null,       //压缩
+  crop: CameraCrop? = null,               //裁剪
+  isGif: Boolean = false,                 //是否显示gif图片
+  language: Int = LanguageConfig.CHINESE  //设置语言，默认中文
+
+```
+
+## 相册选择可选参数
+```
+ requestCode: Int,                       //requestCode
+ engine: ImageEngine,                    //图片加载框架
+ isCamera: Boolean = false,              //是否显示拍照按钮
+ maxSelectNum: Int = 1,                  //最大图片选择数量
+ minSelectNum: Int = 1,                  //最小图片选择数量
+ cameraTheme: CameraTheme? = null,       //相册样式
+ isOriginalControl: Boolean = true,      //是否显示原图控制按钮，如果用户勾选了 压缩、裁剪功能将会失效
+ compress: CameraCompress? = null,       //压缩
+ crop: CameraCrop? = null,               //裁剪
+ isGif: Boolean = false,                 //是否显示gif图片
+ language: Int = LanguageConfig.CHINESE  //设置语言，默认中文
+
+```
+
 ## 主题可选参数
 ```
 data class CameraTheme(
