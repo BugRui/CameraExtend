@@ -71,6 +71,7 @@ implementation 'com.github.BugRui:CameraExtend:v1.0.4'
 ## 拍照可选参数
 ```
   requestCode: Int,                       //requestCode
+  cameraTheme: CameraTheme? = null,       //相册样式
   compress: CameraCompress? = null,       //压缩
   crop: CameraCrop? = null,               //裁剪
   isGif: Boolean = false,                 //是否显示gif图片
