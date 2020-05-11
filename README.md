@@ -76,6 +76,7 @@ implementation 'com.github.BugRui:CameraExtend:v1.1.0'
   crop: CameraCrop? = null,               //裁剪
   isGif: Boolean = false,                 //是否显示gif图片
   language: Int = LanguageConfig.CHINESE  //设置语言，默认中文
+  requestedOrientation: Int               //屏幕旋转方向
 
 ```
 
@@ -92,6 +93,7 @@ implementation 'com.github.BugRui:CameraExtend:v1.1.0'
  crop: CameraCrop? = null,               //裁剪
  isGif: Boolean = false,                 //是否显示gif图片
  language: Int = LanguageConfig.CHINESE  //设置语言，默认中文
+ requestedOrientation: Int               //屏幕旋转方向
 
 ```
 
