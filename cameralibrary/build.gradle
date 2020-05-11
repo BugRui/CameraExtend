@@ -8,8 +8,8 @@ android {
     defaultConfig {
         minSdkVersion 19
         targetSdkVersion 29
-        versionCode 4
-        versionName "1.0.4"
+        versionCode 5
+        versionName "1.1.0"
         consumerProguardFiles 'consumer-rules.pro'
     }
     compileOptions {
@@ -29,9 +29,9 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'androidx.appcompat:appcompat:1.1.0'
-    implementation 'androidx.core:core-ktx:1.1.0'
+    implementation 'androidx.core:core-ktx:1.2.0'
     //拍照
-    api 'com.github.LuckSiege.PictureSelector:picture_library:v2.4.1'
+    api 'com.github.LuckSiege.PictureSelector:picture_library:v2.5.5'
     //动态权限
     implementation 'com.github.BugRui:AndroidPermission:1.0.0'
 }

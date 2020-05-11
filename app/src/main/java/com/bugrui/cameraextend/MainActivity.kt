@@ -25,7 +25,7 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
         fab.setOnClickListener {
             openCamera(
-                10011,
+                10012,
                 cameraTheme = CameraTheme(
                     //自定义裁剪样式
                     cropPictureStyle = PictureCropParameterStyle(
@@ -37,9 +37,6 @@ class MainActivity : AppCompatActivity() {
                 ),
                 compress = CameraCompress(
                     isCompress = true
-                ),
-                crop = CameraCrop(
-                    isCrop = true
                 )
             )
         }
@@ -57,7 +54,7 @@ class MainActivity : AppCompatActivity() {
                 openGallery(
                     10011,
                     isCamera = true,
-                    engine = GlideEngine(),
+                    engine = GlideEngine,
                     cameraTheme = CameraTheme(
                         theme = pictureCameraThemeWhite
                     ),
@@ -81,6 +78,9 @@ class MainActivity : AppCompatActivity() {
         }
         if (requestCode == 10011) {
             Glide.with(this).load(data?.imagePath).into(imageView)
+        }
+        if (requestCode == 10012) {
+            Glide.with(this).load(data?.imagePath).into(imageView1)
         }
     }
 }

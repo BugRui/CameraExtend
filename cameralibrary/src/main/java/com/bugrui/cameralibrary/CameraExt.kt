@@ -1,6 +1,7 @@
 package com.bugrui.cameralibrary
 
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.text.TextUtils
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
@@ -215,7 +216,8 @@ fun FragmentActivity.openCamera(
     cameraTheme: CameraTheme? = null,       //相册样式
     compress: CameraCompress? = null,       //压缩
     crop: CameraCrop? = null,               //裁剪
-    language: Int = LanguageConfig.CHINESE  //设置语言，默认中文
+    language: Int = LanguageConfig.CHINESE,  //设置语言，默认中文
+    requestedOrientation: Int = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT//屏幕旋转方向
 ) {
     permissionCheck(cameraAndStoragePermissions, object : OnPermissionsTaskListener() {
         override fun onPermissionsTask() {
@@ -225,6 +227,7 @@ fun FragmentActivity.openCamera(
                 .setCameraTheme(cameraTheme)
                 .setCompress(compress)
                 .setCrop(crop)
+                .setRequestedOrientation(requestedOrientation)
                 .forResult(requestCode)
         }
     })
@@ -239,7 +242,8 @@ fun Fragment.openCamera(
     cameraTheme: CameraTheme? = null,       //相册样式
     compress: CameraCompress? = null,       //压缩
     crop: CameraCrop? = null,               //裁剪
-    language: Int = LanguageConfig.CHINESE  //设置语言，默认中文
+    language: Int = LanguageConfig.CHINESE, //设置语言，默认中文
+    requestedOrientation: Int = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT//屏幕旋转方向
 ) {
     permissionCheck(cameraAndStoragePermissions, object : OnPermissionsTaskListener() {
         override fun onPermissionsTask() {
@@ -249,6 +253,7 @@ fun Fragment.openCamera(
                 .setCameraTheme(cameraTheme)
                 .setCompress(compress)
                 .setCrop(crop)
+                .setRequestedOrientation(requestedOrientation)
                 .forResult(requestCode)
         }
     })
@@ -268,7 +273,8 @@ fun FragmentActivity.openGallery(
     compress: CameraCompress? = null,       //压缩
     crop: CameraCrop? = null,               //裁剪
     isGif: Boolean = false,                 //是否显示gif图片
-    language: Int = LanguageConfig.CHINESE  //设置语言，默认中文
+    language: Int = LanguageConfig.CHINESE,  //设置语言，默认中文
+    requestedOrientation: Int = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT//屏幕旋转方向
 ) {
     permissionCheck(cameraAndStoragePermissions, object : OnPermissionsTaskListener() {
         override fun onPermissionsTask() {
@@ -279,12 +285,13 @@ fun FragmentActivity.openGallery(
                 .minSelectNum(minSelectNum)
                 .theme(R.style.picture_white_style)
                 .isGif(isGif)
-                .loadImageEngine(engine)
+                .imageEngine(engine)
                 .isOriginalImageControl(isOriginalControl)
                 .setLanguage(language)
                 .setCameraTheme(cameraTheme)
                 .setCompress(compress)
                 .setCrop(crop)
+                .setRequestedOrientation(requestedOrientation)
                 .forResult(requestCode)
         }
     })
@@ -304,7 +311,8 @@ fun Fragment.openGallery(
     compress: CameraCompress? = null,       //压缩
     crop: CameraCrop? = null,               //裁剪
     isGif: Boolean = false,                 //是否显示gif图片
-    language: Int = LanguageConfig.CHINESE  //设置语言，默认中文
+    language: Int = LanguageConfig.CHINESE, //设置语言，默认中文
+    requestedOrientation: Int = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT//屏幕旋转方向
 ) {
     permissionCheck(cameraAndStoragePermissions, object : OnPermissionsTaskListener() {
         override fun onPermissionsTask() {
@@ -315,12 +323,13 @@ fun Fragment.openGallery(
                 .minSelectNum(minSelectNum)
                 .theme(R.style.picture_white_style)
                 .isGif(isGif)
-                .loadImageEngine(engine)
+                .imageEngine(engine)
                 .isOriginalImageControl(isOriginalControl)
                 .setLanguage(language)
                 .setCameraTheme(cameraTheme)
                 .setCompress(compress)
                 .setCrop(crop)
+                .setRequestedOrientation(requestedOrientation)
                 .forResult(requestCode)
         }
     })
