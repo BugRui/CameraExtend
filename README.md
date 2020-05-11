@@ -13,7 +13,7 @@ allprojects {
 ```
 #### Step 2. Add the dependency
 ```
-implementation 'com.github.BugRui:CameraExtend:v1.0.4'
+implementation 'com.github.BugRui:CameraExtend:v1.1.0'
 ```
 #### Step 3. Need to be in AndroidManifest.xml add permission
 ```
