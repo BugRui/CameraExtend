@@ -11,12 +11,15 @@ import com.luck.picture.lib.PictureSelectionModel
 import com.luck.picture.lib.PictureSelector
 import com.luck.picture.lib.config.PictureMimeType
 import com.luck.picture.lib.engine.ImageEngine
+import com.luck.picture.lib.entity.LocalMedia
 import com.luck.picture.lib.language.LanguageConfig
+import com.luck.picture.lib.listener.OnResultCallbackListener
 import com.luck.picture.lib.style.PictureCropParameterStyle
 import com.luck.picture.lib.style.PictureParameterStyle
 import com.luck.picture.lib.style.PictureWindowAnimationStyle
 import com.luck.picture.lib.tools.PictureFileUtils
-import java.util.ArrayList
+import com.luck.picture.lib.tools.SdkVersionUtils
+import java.util.*
 
 /**
  * @Author:            BugRui
@@ -112,7 +115,7 @@ data class CameraCompress(
  */
 fun PictureSelectionModel.setCompress(compress: CameraCompress? = null): PictureSelectionModel {
     compress?.let {
-        this.compress(it.isCompress)
+        this.isCompress(it.isCompress)
             .minimumCompressSize(it.minimumCompressSize)
             .synOrAsy(it.synOrAsy)
         if (!TextUtils.isEmpty(it.compressSavePath)) {
@@ -147,7 +150,7 @@ data class CameraCrop(
  */
 fun PictureSelectionModel.setCrop(crop: CameraCrop? = null): PictureSelectionModel {
     crop?.let {
-        this.enableCrop(it.isCrop)
+        this.isEnableCrop(it.isCrop)
 
         //裁剪输出质量
         this.cutOutQuality(it.cutOutQuality)
@@ -197,7 +200,7 @@ fun PictureSelectionModel.setCrop(crop: CameraCrop? = null): PictureSelectionMod
 
         //裁剪是否可放大缩小图片
         if (it.cropWidth != -1 && it.cropHeight != -1) {
-            this.cropWH(it.cropWidth, it.cropHeight)
+            this.cropImageWideHigh(it.cropWidth, it.cropHeight)
         }
         //裁剪比例 如16:9 3:2 3:4 1:1 可自定义
         if (it.aspect_ratio_x != -1 && it.aspect_ratio_y != -1) {
@@ -208,63 +211,25 @@ fun PictureSelectionModel.setCrop(crop: CameraCrop? = null): PictureSelectionMod
     return this
 }
 
-/**
- * 相机拍照
- */
-fun FragmentActivity.openCamera(
-    requestCode: Int,                       //requestCode
+private fun PictureSelector.createGalleryPictureSelectionModel(
+    chooseMode: Int = PictureMimeType.ofImage(),//拍照or录视频
     cameraTheme: CameraTheme? = null,       //相册样式
     compress: CameraCompress? = null,       //压缩
     crop: CameraCrop? = null,               //裁剪
     language: Int = LanguageConfig.CHINESE,  //设置语言，默认中文
     requestedOrientation: Int = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT//屏幕旋转方向
-) {
-    permissionCheck(cameraAndStoragePermissions, object : OnPermissionsTaskListener() {
-        override fun onPermissionsTask() {
-            PictureSelector.create(this@openCamera)
-                .openCamera(PictureMimeType.ofImage())
-                .setLanguage(language)
-                .setCameraTheme(cameraTheme)
-                .setCompress(compress)
-                .setCrop(crop)
-                .setRequestedOrientation(requestedOrientation)
-                .forResult(requestCode)
-        }
-    })
-
+): PictureSelectionModel {
+    return this.openCamera(chooseMode)
+        .setLanguage(language)
+        .setCameraTheme(cameraTheme)
+        .setCompress(compress)
+        .setCrop(crop)
+        .setRequestedOrientation(requestedOrientation)
 }
 
-/**
- * 相机拍照
- */
-fun Fragment.openCamera(
-    requestCode: Int,                       //requestCode
-    cameraTheme: CameraTheme? = null,       //相册样式
-    compress: CameraCompress? = null,       //压缩
-    crop: CameraCrop? = null,               //裁剪
-    language: Int = LanguageConfig.CHINESE, //设置语言，默认中文
-    requestedOrientation: Int = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT//屏幕旋转方向
-) {
-    permissionCheck(cameraAndStoragePermissions, object : OnPermissionsTaskListener() {
-        override fun onPermissionsTask() {
-            PictureSelector.create(this@openCamera)
-                .openCamera(PictureMimeType.ofImage())
-                .setLanguage(language)
-                .setCameraTheme(cameraTheme)
-                .setCompress(compress)
-                .setCrop(crop)
-                .setRequestedOrientation(requestedOrientation)
-                .forResult(requestCode)
-        }
-    })
-}
-
-/**
- * 相册选择
- */
-fun FragmentActivity.openGallery(
-    requestCode: Int,                       //requestCode
+private fun PictureSelector.createGalleryPictureSelectionModel(
     engine: ImageEngine,                    //图片加载框架
+    chooseMode: Int = PictureMimeType.ofImage(),    //图片or视频
     isCamera: Boolean = false,              //是否显示拍照按钮
     maxSelectNum: Int = 1,                  //最大图片选择数量
     minSelectNum: Int = 1,                  //最小图片选择数量
@@ -275,24 +240,156 @@ fun FragmentActivity.openGallery(
     isGif: Boolean = false,                 //是否显示gif图片
     language: Int = LanguageConfig.CHINESE,  //设置语言，默认中文
     requestedOrientation: Int = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT//屏幕旋转方向
+): PictureSelectionModel {
+    return this.openGallery(chooseMode)
+        .isCamera(isCamera)
+        .maxSelectNum(maxSelectNum)
+        .minSelectNum(minSelectNum)
+        .theme(R.style.picture_white_style)
+        .isGif(isGif)
+        .imageEngine(engine)
+        .isOriginalImageControl(isOriginalControl)
+        .setLanguage(language)
+        .setCameraTheme(cameraTheme)
+        .setCompress(compress)
+        .setCrop(crop)
+        .setRequestedOrientation(requestedOrientation)
+}
+
+
+/**
+ * 相机拍照
+ */
+fun FragmentActivity.openCamera(
+    chooseMode: Int = PictureMimeType.ofImage(),    //拍照or录视频
+    cameraTheme: CameraTheme? = null,               //相册样式
+    compress: CameraCompress? = null,               //压缩
+    crop: CameraCrop? = null,                       //裁剪
+    language: Int = LanguageConfig.CHINESE,         //设置语言，默认中文
+    requestedOrientation: Int = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT,//屏幕旋转方向
+    requestCode: Int                               //requestCode
+) {
+    permissionCheck(cameraAndStoragePermissions, object : OnPermissionsTaskListener() {
+        override fun onPermissionsTask() {
+            PictureSelector.create(this@openCamera).createGalleryPictureSelectionModel(
+                chooseMode, cameraTheme, compress, crop, language, requestedOrientation
+            ).forResult(requestCode)
+        }
+    })
+}
+
+/**
+ * 相机拍照
+ */
+fun FragmentActivity.openCamera(
+    chooseMode: Int = PictureMimeType.ofImage(),    //拍照or录视频
+    cameraTheme: CameraTheme? = null,               //相册样式
+    compress: CameraCompress? = null,               //压缩
+    crop: CameraCrop? = null,                       //裁剪
+    language: Int = LanguageConfig.CHINESE,         //设置语言，默认中文
+    requestedOrientation: Int = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT,//屏幕旋转方向
+    resultListener: OnResultCallbackListener<LocalMedia>//结果回调
+) {
+    permissionCheck(cameraAndStoragePermissions, object : OnPermissionsTaskListener() {
+        override fun onPermissionsTask() {
+            PictureSelector.create(this@openCamera).createGalleryPictureSelectionModel(
+                chooseMode, cameraTheme, compress, crop, language, requestedOrientation
+            ).forResult(resultListener)
+        }
+    })
+}
+
+
+/**
+ * 相机拍照
+ */
+fun Fragment.openCamera(
+    chooseMode: Int = PictureMimeType.ofImage(),    //拍照or录视频
+    cameraTheme: CameraTheme? = null,               //相册样式
+    compress: CameraCompress? = null,               //压缩
+    crop: CameraCrop? = null,                       //裁剪
+    language: Int = LanguageConfig.CHINESE,         //设置语言，默认中文
+    requestedOrientation: Int = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT,//屏幕旋转方向
+    requestCode: Int                               //requestCode
+) {
+    permissionCheck(cameraAndStoragePermissions, object : OnPermissionsTaskListener() {
+        override fun onPermissionsTask() {
+            PictureSelector.create(this@openCamera)
+                .createGalleryPictureSelectionModel(
+                    chooseMode = chooseMode,
+                    cameraTheme = cameraTheme,
+                    compress = compress,
+                    crop = crop,
+                    language = language,
+                    requestedOrientation = requestedOrientation
+                ).forResult(requestCode)
+        }
+    })
+}
+
+/**
+ * 相机拍照
+ */
+fun Fragment.openCamera(
+    chooseMode: Int = PictureMimeType.ofImage(),    //拍照or录视频
+    cameraTheme: CameraTheme? = null,               //相册样式
+    compress: CameraCompress? = null,               //压缩
+    crop: CameraCrop? = null,                       //裁剪
+    language: Int = LanguageConfig.CHINESE,         //设置语言，默认中文
+    requestedOrientation: Int = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT,//屏幕旋转方向
+    resultListener: OnResultCallbackListener<LocalMedia>//结果回调
+) {
+    permissionCheck(cameraAndStoragePermissions, object : OnPermissionsTaskListener() {
+        override fun onPermissionsTask() {
+            PictureSelector.create(this@openCamera)
+                .createGalleryPictureSelectionModel(
+                    chooseMode = chooseMode,
+                    cameraTheme = cameraTheme,
+                    compress = compress,
+                    crop = crop,
+                    language = language,
+                    requestedOrientation = requestedOrientation
+                ).forResult(resultListener)
+        }
+    })
+}
+
+
+/**
+ * 相册选择
+ */
+fun FragmentActivity.openGallery(
+    chooseMode: Int = PictureMimeType.ofImage(),    //图片or视频
+    isCamera: Boolean = false,              //是否显示拍照按钮
+    maxSelectNum: Int = 1,                  //最大图片选择数量
+    minSelectNum: Int = 1,                  //最小图片选择数量
+    cameraTheme: CameraTheme? = null,       //相册样式
+    isOriginalControl: Boolean = true,      //是否显示原图控制按钮，如果用户勾选了 压缩、裁剪功能将会失效
+    compress: CameraCompress? = null,       //压缩
+    crop: CameraCrop? = null,               //裁剪
+    isGif: Boolean = false,                 //是否显示gif图片
+    language: Int = LanguageConfig.CHINESE,  //设置语言，默认中文
+    requestedOrientation: Int = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT,//屏幕旋转方向
+    engine: ImageEngine,                    //图片加载框架
+    requestCode: Int
 ) {
     permissionCheck(cameraAndStoragePermissions, object : OnPermissionsTaskListener() {
         override fun onPermissionsTask() {
             PictureSelector.create(this@openGallery)
-                .openGallery(PictureMimeType.ofImage())
-                .isCamera(isCamera)
-                .maxSelectNum(maxSelectNum)
-                .minSelectNum(minSelectNum)
-                .theme(R.style.picture_white_style)
-                .isGif(isGif)
-                .imageEngine(engine)
-                .isOriginalImageControl(isOriginalControl)
-                .setLanguage(language)
-                .setCameraTheme(cameraTheme)
-                .setCompress(compress)
-                .setCrop(crop)
-                .setRequestedOrientation(requestedOrientation)
-                .forResult(requestCode)
+                .createGalleryPictureSelectionModel(
+                    engine = engine,
+                    chooseMode = chooseMode,
+                    isCamera = isCamera,
+                    maxSelectNum = maxSelectNum,
+                    minSelectNum = minSelectNum,
+                    cameraTheme = cameraTheme,
+                    isOriginalControl = isOriginalControl,
+                    compress = compress,
+                    crop = crop,
+                    isGif = isGif,
+                    language = language,
+                    requestedOrientation = requestedOrientation
+                ).forResult(requestCode)
         }
     })
 }
@@ -301,8 +398,7 @@ fun FragmentActivity.openGallery(
  * 相册选择
  */
 fun Fragment.openGallery(
-    requestCode: Int,                       //requestCode
-    engine: ImageEngine,                    //图片加载框架
+    chooseMode: Int = PictureMimeType.ofImage(),    //图片or视频
     isCamera: Boolean = false,              //是否显示拍照按钮
     maxSelectNum: Int = 1,                  //最大图片选择数量
     minSelectNum: Int = 1,                  //最小图片选择数量
@@ -312,25 +408,106 @@ fun Fragment.openGallery(
     crop: CameraCrop? = null,               //裁剪
     isGif: Boolean = false,                 //是否显示gif图片
     language: Int = LanguageConfig.CHINESE, //设置语言，默认中文
-    requestedOrientation: Int = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT//屏幕旋转方向
+    requestedOrientation: Int = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT,//屏幕旋转方向
+    engine: ImageEngine,                    //图片加载框架
+    requestCode: Int                       //requestCode
 ) {
     permissionCheck(cameraAndStoragePermissions, object : OnPermissionsTaskListener() {
         override fun onPermissionsTask() {
             PictureSelector.create(this@openGallery)
-                .openGallery(PictureMimeType.ofImage())
-                .isCamera(isCamera)
-                .maxSelectNum(maxSelectNum)
-                .minSelectNum(minSelectNum)
-                .theme(R.style.picture_white_style)
-                .isGif(isGif)
-                .imageEngine(engine)
-                .isOriginalImageControl(isOriginalControl)
-                .setLanguage(language)
-                .setCameraTheme(cameraTheme)
-                .setCompress(compress)
-                .setCrop(crop)
-                .setRequestedOrientation(requestedOrientation)
-                .forResult(requestCode)
+                .createGalleryPictureSelectionModel(
+                    engine = engine,
+                    chooseMode = chooseMode,
+                    isCamera = isCamera,
+                    maxSelectNum = maxSelectNum,
+                    minSelectNum = minSelectNum,
+                    cameraTheme = cameraTheme,
+                    isOriginalControl = isOriginalControl,
+                    compress = compress,
+                    crop = crop,
+                    isGif = isGif,
+                    language = language,
+                    requestedOrientation = requestedOrientation
+                ).forResult(requestCode)
+        }
+    })
+}
+
+
+/**
+ * 相册选择
+ */
+fun FragmentActivity.openGallery(
+    chooseMode: Int = PictureMimeType.ofImage(),    //图片or视频
+    isCamera: Boolean = false,              //是否显示拍照按钮
+    maxSelectNum: Int = 1,                  //最大图片选择数量
+    minSelectNum: Int = 1,                  //最小图片选择数量
+    cameraTheme: CameraTheme? = null,       //相册样式
+    isOriginalControl: Boolean = true,      //是否显示原图控制按钮，如果用户勾选了 压缩、裁剪功能将会失效
+    compress: CameraCompress? = null,       //压缩
+    crop: CameraCrop? = null,               //裁剪
+    isGif: Boolean = false,                 //是否显示gif图片
+    language: Int = LanguageConfig.CHINESE,  //设置语言，默认中文
+    requestedOrientation: Int = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT,//屏幕旋转方向
+    engine: ImageEngine,                    //图片加载框架
+    resultListener: OnResultCallbackListener<LocalMedia>//结果回调
+) {
+    permissionCheck(cameraAndStoragePermissions, object : OnPermissionsTaskListener() {
+        override fun onPermissionsTask() {
+            PictureSelector.create(this@openGallery)
+                .createGalleryPictureSelectionModel(
+                    engine = engine,
+                    chooseMode = chooseMode,
+                    isCamera = isCamera,
+                    maxSelectNum = maxSelectNum,
+                    minSelectNum = minSelectNum,
+                    cameraTheme = cameraTheme,
+                    isOriginalControl = isOriginalControl,
+                    compress = compress,
+                    crop = crop,
+                    isGif = isGif,
+                    language = language,
+                    requestedOrientation = requestedOrientation
+                ).forResult(resultListener)
+        }
+    })
+}
+
+/**
+ * 相册选择
+ */
+fun Fragment.openGallery(
+    chooseMode: Int = PictureMimeType.ofImage(),    //图片or视频
+    isCamera: Boolean = false,              //是否显示拍照按钮
+    maxSelectNum: Int = 1,                  //最大图片选择数量
+    minSelectNum: Int = 1,                  //最小图片选择数量
+    cameraTheme: CameraTheme? = null,       //相册样式
+    isOriginalControl: Boolean = true,      //是否显示原图控制按钮，如果用户勾选了 压缩、裁剪功能将会失效
+    compress: CameraCompress? = null,       //压缩
+    crop: CameraCrop? = null,               //裁剪
+    isGif: Boolean = false,                 //是否显示gif图片
+    language: Int = LanguageConfig.CHINESE, //设置语言，默认中文
+    requestedOrientation: Int = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT,//屏幕旋转方向
+    engine: ImageEngine,                    //图片加载框架
+    resultListener: OnResultCallbackListener<LocalMedia>//结果回调
+) {
+    permissionCheck(cameraAndStoragePermissions, object : OnPermissionsTaskListener() {
+        override fun onPermissionsTask() {
+            PictureSelector.create(this@openGallery)
+                .createGalleryPictureSelectionModel(
+                    engine = engine,
+                    chooseMode = chooseMode,
+                    isCamera = isCamera,
+                    maxSelectNum = maxSelectNum,
+                    minSelectNum = minSelectNum,
+                    cameraTheme = cameraTheme,
+                    isOriginalControl = isOriginalControl,
+                    compress = compress,
+                    crop = crop,
+                    isGif = isGif,
+                    language = language,
+                    requestedOrientation = requestedOrientation
+                ).forResult(resultListener)
         }
     })
 }
@@ -349,15 +526,7 @@ val Intent.imagePaths: List<String>
             return imageList
         }
         for (media in selectList) {
-            if (media.isCompressed && !TextUtils.isEmpty(media.compressPath)) {
-                imageList.add(media.compressPath)
-                continue
-            }
-            if (media.isCut && !TextUtils.isEmpty(media.cutPath)) {
-                imageList.add(media.cutPath)
-                continue
-            }
-            imageList.add(media.path)
+            imageList.add(media.getMediaPath)
         }
         return imageList
     }
@@ -369,15 +538,43 @@ val Intent.imagePath: String
     get() {
         // 图片、视频、音频选择结果回调
         val selectList = PictureSelector.obtainMultipleResult(this) ?: return ""
-        val media = selectList[0]
-        if (media.isCompressed && !TextUtils.isEmpty(media.compressPath)) {
-            return media.compressPath
-        }
-        return if (media.isCut && !TextUtils.isEmpty(media.cutPath)) {
-            media.cutPath
-        } else media.path
+        return selectList[0].getMediaPath
     }
 
+
+/**
+ * 处理LocalMedia
+ */
+ val LocalMedia.getMediaPath: String
+    get() {
+        if (SdkVersionUtils.checkedAndroid_Q()) {
+            return if (this.isCut && !this.isCompressed) {
+                // 裁剪过
+                this.cutPath
+            } else if (this.isCompressed || this.isCut && this.isCompressed) {
+                // 压缩过,或者裁剪同时压缩过,以最终压缩过图片为准
+                this.compressPath
+            } else if (!this.androidQToPath.isNullOrEmpty()) {
+                //Android Q版本特有返回的字段，但如果开启了压缩或裁剪还是取裁剪或压缩路径；
+                // 注意：.isAndroidQTransform(false);此字段将返回空
+                this.androidQToPath
+            } else {
+                // 原图
+                this.path
+            }
+        } else {
+            return if (this.isCut && !this.isCompressed) {
+                // 裁剪过
+                this.cutPath
+            } else if (this.isCompressed || this.isCut && this.isCompressed) {
+                // 压缩过,或者裁剪同时压缩过,以最终压缩过图片为准
+                this.compressPath
+            } else {
+                // 原图
+                this.path
+            }
+        }
+    }
 
 /**
  * 清除拍照缓存
