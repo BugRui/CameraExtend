@@ -1,2 +1,4 @@
+include ':picture_library'
+include ':ucrop'
 include ':app', ':cameralibrary'
 rootProject.name='CameraExtend'

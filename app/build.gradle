@@ -5,15 +5,27 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
 android {
+
+    signingConfigs {
+        appSigning {
+            keyAlias 'appKeyStore'
+            keyPassword '123456'
+            storeFile file('../signature/appKeyStore.jks')
+            storePassword '123456'
+        }
+    }
+
     compileSdkVersion 29
     buildToolsVersion "29.0.2"
     defaultConfig {
         applicationId "com.bugrui.cameraextend"
         minSdkVersion 19
         targetSdkVersion 29
-        versionCode 4
-        versionName "1.0.4"
+        versionCode 5
+        versionName "1.0.5"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        signingConfig signingConfigs.appSigning
+
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -23,7 +35,12 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.appSigning
+
         }
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
     }
 }
 
@@ -34,6 +51,9 @@ dependencies {
     implementation 'androidx.core:core-ktx:1.1.0'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
     implementation 'com.google.android.material:material:1.0.0'
+    implementation 'androidx.navigation:navigation-fragment-ktx:2.1.0'
+    implementation 'androidx.navigation:navigation-ui-ktx:2.1.0'
+
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
