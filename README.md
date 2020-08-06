@@ -101,6 +101,11 @@ openGallery(engine = GalleryImageEngine,
 
 ```
 
+## 结果处理方式，（自己单独处理也行）
+```
+LocalMedia.getMediaPath
+
+```
 
 
 
