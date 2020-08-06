@@ -24,12 +24,12 @@ implementation 'com.github.BugRui.CameraExtend:cameralibrary:1.1.2'
 ## 相机拍照 
 #### kotlin use
 ```
- openCamera(10086)  //直接拍照 
+ openCamera(requestCode = 10086)  //直接拍照 
  
  or
  
  openCamera(
-        10086,
+        requestCode = 10086,
 	//使用压缩 
         compress = CameraCompress(
             isCompress = true
@@ -39,16 +39,19 @@ implementation 'com.github.BugRui.CameraExtend:cameralibrary:1.1.2'
             isCrop = true
         )
  )
+ 
 
 ```
+
+
 ## 相册选择  GlideEngine 继承 ImageEngine实现，详细可参考demo
 ```
- openGallery(10086, engine = GlideEngine())
+ openGallery(requestCode = 10086, engine = GlideEngine())
  
  or
  
  openGallery(
-          10086,
+          requestCode = 10086,
 	  //是否开启拍照按钮
           isCamera = true,
 	  //列表图片加载器
@@ -68,9 +71,43 @@ implementation 'com.github.BugRui.CameraExtend:cameralibrary:1.1.2'
 )
  
 ```
+
+## 新增结果回调方式
+```
+//相机
+openCamera(resultListener = object : OnResultCallbackListener<LocalMedia>{
+                        override fun onResult(result: MutableList<LocalMedia>?) {
+                            //返回结果
+                        }
+
+                        override fun onCancel() {
+			    //取消
+                        }
+                    }
+                )
+		
+//相册
+openGallery(engine = GalleryImageEngine,
+                    resultListener = object : OnResultCallbackListener<LocalMedia> {
+                        override fun onResult(result: MutableList<LocalMedia>?) {
+				//返回结果
+                        }
+
+                        override fun onCancel() {
+				 //取消
+                        }
+                    }
+                )
+
+```
+
+
+
+
 ## 拍照可选参数
 ```
   requestCode: Int,                       //requestCode
+  chooseMode: Int = PictureMimeType.ofImage(), //选择模式，拍照、录像等
   cameraTheme: CameraTheme? = null,       //相册样式
   compress: CameraCompress? = null,       //压缩
   crop: CameraCrop? = null,               //裁剪
@@ -83,6 +120,7 @@ implementation 'com.github.BugRui.CameraExtend:cameralibrary:1.1.2'
 ## 相册选择可选参数
 ```
  requestCode: Int,                       //requestCode
+ chooseMode: Int = PictureMimeType.ofImage(), //选择模式，加载图片，视频等
  engine: ImageEngine,                    //图片加载框架
  isCamera: Boolean = false,              //是否显示拍照按钮
  maxSelectNum: Int = 1,                  //最大图片选择数量
