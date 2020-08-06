@@ -136,9 +136,44 @@ openGallery(engine = GalleryImageEngine,
 
 ```
 
-## 结果处理方式，（自己单独处理也行）
+## 处理结果LocalMedia返回资源地址，（自己单独处理也行）
 ```
 LocalMedia.getMediaPath
+
+/**
+ * 处理LocalMedia
+ */
+ val LocalMedia.getMediaPath: String
+    get() {
+        if (SdkVersionUtils.checkedAndroid_Q()) {
+            return if (this.isCut && !this.isCompressed) {
+                // 裁剪过
+                this.cutPath
+            } else if (this.isCompressed || this.isCut && this.isCompressed) {
+                // 压缩过,或者裁剪同时压缩过,以最终压缩过图片为准
+                this.compressPath
+            } else if (!this.androidQToPath.isNullOrEmpty()) {
+                //Android Q版本特有返回的字段，但如果开启了压缩或裁剪还是取裁剪或压缩路径；
+                // 注意：.isAndroidQTransform(false);此字段将返回空
+                this.androidQToPath
+            } else {
+                // 原图
+                this.path
+            }
+        } else {
+            return if (this.isCut && !this.isCompressed) {
+                // 裁剪过
+                this.cutPath
+            } else if (this.isCompressed || this.isCut && this.isCompressed) {
+                // 压缩过,或者裁剪同时压缩过,以最终压缩过图片为准
+                this.compressPath
+            } else {
+                // 原图
+                this.path
+            }
+        }
+    }
+    
 
 ```
 
