@@ -13,7 +13,7 @@ allprojects {
 ```
 #### Step 2. Add the dependency
 ```
-implementation 'com.github.BugRui:CameraExtend:1.1.3'
+implementation 'com.github.BugRui:CameraExtend:1.1.4'
 ```
 #### Step 3. Need to be in AndroidManifest.xml add permission
 ```
@@ -138,12 +138,38 @@ openGallery(engine = GalleryImageEngine,
 
 ## 处理结果LocalMedia返回资源地址，（自己单独处理也行）
 ```
-LocalMedia.getMediaPath
+/**
+ * 结果返回多张
+ */
+val Intent.imagePaths: List<String>
+    get() {
+        // 图片、视频、音频选择结果回调
+        val selectList = PictureSelector.obtainMultipleResult(this)
+        val imageList = ArrayList<String>()
+        if (selectList == null) {
+            imageList.add("相机返回为空!")
+            return imageList
+        }
+        for (media in selectList) {
+            imageList.add(media.getMediaPath)
+        }
+        return imageList
+    }
+
+/**
+ * 结果返回单张
+ */
+val Intent.imagePath: String
+    get() {
+        // 图片、视频、音频选择结果回调
+        val selectList = PictureSelector.obtainMultipleResult(this) ?: return ""
+        return selectList[0].getMediaPath
+    }
 
 /**
  * 处理LocalMedia
  */
- val LocalMedia.getMediaPath: String
+val LocalMedia.getMediaPath: String
     get() {
         if (SdkVersionUtils.checkedAndroid_Q()) {
             return if (this.isCut && !this.isCompressed) {
@@ -156,6 +182,9 @@ LocalMedia.getMediaPath
                 //Android Q版本特有返回的字段，但如果开启了压缩或裁剪还是取裁剪或压缩路径；
                 // 注意：.isAndroidQTransform(false);此字段将返回空
                 this.androidQToPath
+            } else if (!this.realPath.isNullOrEmpty()) {
+                // 真正的路径
+                this.realPath
             } else {
                 // 原图
                 this.path
@@ -167,6 +196,9 @@ LocalMedia.getMediaPath
             } else if (this.isCompressed || this.isCut && this.isCompressed) {
                 // 压缩过,或者裁剪同时压缩过,以最终压缩过图片为准
                 this.compressPath
+            } else if (!this.realPath.isNullOrEmpty()) {
+                // 真正的路径
+                this.realPath
             } else {
                 // 原图
                 this.path
