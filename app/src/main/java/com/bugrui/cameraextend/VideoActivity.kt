@@ -52,6 +52,7 @@ class VideoActivity : AppCompatActivity() {
                                         "\n\ncutPath:${media.cutPath}" +
                                         "\n\ncompressPath:${media.compressPath}" +
                                         "\n\npath:${media.path}" +
+                                        "\n\nrealPath:${media.realPath}" +
                                         "\n\ngetMediaPath:${media.getMediaPath}", Toast.LENGTH_SHORT
                             ).show()
                             videoView.setVideoPath(media.getMediaPath)

@@ -545,7 +545,7 @@ val Intent.imagePath: String
 /**
  * 处理LocalMedia
  */
- val LocalMedia.getMediaPath: String
+val LocalMedia.getMediaPath: String
     get() {
         if (SdkVersionUtils.checkedAndroid_Q()) {
             return if (this.isCut && !this.isCompressed) {
@@ -558,6 +558,9 @@ val Intent.imagePath: String
                 //Android Q版本特有返回的字段，但如果开启了压缩或裁剪还是取裁剪或压缩路径；
                 // 注意：.isAndroidQTransform(false);此字段将返回空
                 this.androidQToPath
+            } else if (!this.realPath.isNullOrEmpty()) {
+                // 真正的路径
+                this.realPath
             } else {
                 // 原图
                 this.path
@@ -569,6 +572,9 @@ val Intent.imagePath: String
             } else if (this.isCompressed || this.isCut && this.isCompressed) {
                 // 压缩过,或者裁剪同时压缩过,以最终压缩过图片为准
                 this.compressPath
+            } else if (!this.realPath.isNullOrEmpty()) {
+                // 真正的路径
+                this.realPath
             } else {
                 // 原图
                 this.path
