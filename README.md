@@ -1,4 +1,4 @@
-# Kotlin CameraExtend   [![version](https://jitpack.io/v/BugRui/CameraExtend.svg)](https://jitpack.io/#BugRui/CameraExtend/1.1.2)
+# Kotlin CameraExtend   [![version](https://jitpack.io/v/BugRui/CameraExtend.svg)](https://jitpack.io/#BugRui/CameraExtend/1.1.4)
 ## Android 相机拍照，相册选择 Camera to take pictures ,Photo album to choose 
 基于PictureSelector扩展封装，使用方式更加便捷舒适,已封装了权限申请框架基于PermissionsDispatcher封装的AndroidPermission,调用拍照时会自动申请
 ### 集成
