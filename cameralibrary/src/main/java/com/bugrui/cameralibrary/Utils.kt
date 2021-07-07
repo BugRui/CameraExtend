@@ -1,6 +1,5 @@
 package com.bugrui.cameralibrary
 
-import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
 import android.content.res.AssetFileDescriptor
@@ -16,7 +15,7 @@ import java.io.IOException
  * @CreateDate: 2019/10/12 13:50
  * @Description: 文件工具类
  */
-object FileUtils {
+object Utils {
 
 
     /**

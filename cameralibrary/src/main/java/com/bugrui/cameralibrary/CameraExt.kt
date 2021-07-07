@@ -1,12 +1,12 @@
 package com.bugrui.cameralibrary
 
+import android.Manifest
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.text.TextUtils
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
-import com.bugrui.permission.OnPermissionsTaskListener
-import com.bugrui.permission.permissionCheck
+import com.bugrui.permission.applyPermission
 import com.luck.picture.lib.PictureSelectionModel
 import com.luck.picture.lib.PictureSelector
 import com.luck.picture.lib.config.PictureMimeType
@@ -29,15 +29,48 @@ import java.util.*
 /**
  * 相机权限,sdk卡权限
  */
-private val cameraAndStoragePermissions = arrayOf(
-    "android.permission.CAMERA",
-    "android.permission.READ_EXTERNAL_STORAGE",
-    "android.permission.WRITE_EXTERNAL_STORAGE"
+private val cameraAndStoragePermissions = listOf(
+    Manifest.permission.CAMERA,
+    Manifest.permission.READ_EXTERNAL_STORAGE,
+    Manifest.permission.WRITE_EXTERNAL_STORAGE
 )
-private val storagePermissions = arrayOf(
-    "android.permission.READ_EXTERNAL_STORAGE",
-    "android.permission.WRITE_EXTERNAL_STORAGE"
+private val storagePermissions = listOf(
+    Manifest.permission.READ_EXTERNAL_STORAGE,
+    Manifest.permission.WRITE_EXTERNAL_STORAGE
 )
+
+
+private fun FragmentActivity.applyCameraAndStoragePermission(block: () -> Unit) {
+    applyPermission(cameraAndStoragePermissions) { allGranted, _, _ ->
+        if (allGranted) {
+            block()
+        }
+    }
+}
+
+private fun Fragment.applyCameraAndStoragePermission(block: () -> Unit) {
+    applyPermission(cameraAndStoragePermissions) { allGranted, _, _ ->
+        if (allGranted) {
+            block()
+        }
+    }
+}
+private fun FragmentActivity.applyStoragePermission(block: () -> Unit) {
+    applyPermission(storagePermissions){allGranted, _, _ ->
+        if (allGranted) {
+            block()
+        }
+    }
+}
+
+private fun Fragment.applyStoragePermission(block: () -> Unit) {
+    applyPermission(storagePermissions) { allGranted, _, _ ->
+        if (allGranted) {
+            block()
+        }
+    }
+}
+
 
 const val pictureCameraThemeWhite = 1
 const val pictureCameraThemeQQ = 2
@@ -257,6 +290,7 @@ private fun PictureSelector.createGalleryPictureSelectionModel(
 }
 
 
+
 /**
  * 相机拍照
  */
@@ -269,19 +303,62 @@ fun FragmentActivity.openCamera(
     requestedOrientation: Int = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT,//屏幕旋转方向
     requestCode: Int                               //requestCode
 ) {
-    permissionCheck(cameraAndStoragePermissions, object : OnPermissionsTaskListener() {
-        override fun onPermissionsTask() {
-            PictureSelector.create(this@openCamera).createGalleryPictureSelectionModel(
-                chooseMode, cameraTheme, compress, crop, language, requestedOrientation
+    applyCameraAndStoragePermission {
+        PictureSelector.create(this@openCamera).createGalleryPictureSelectionModel(
+            chooseMode, cameraTheme, compress, crop, language, requestedOrientation
+        ).forResult(requestCode)
+    }
+}
+
+/**
+ * 相机拍照
+ */
+fun FragmentActivity.openCamera(
+    chooseMode: Int = PictureMimeType.ofImage(),    //拍照or录视频
+    cameraTheme: CameraTheme? = null,               //相册样式
+    compress: CameraCompress? = null,               //压缩
+    crop: CameraCrop? = null,                       //裁剪
+    language: Int = LanguageConfig.CHINESE,         //设置语言，默认中文
+    requestedOrientation: Int = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT,//屏幕旋转方向
+    resultListener: OnResultCallbackListener<LocalMedia>//结果回调
+) {
+    applyCameraAndStoragePermission {
+        PictureSelector.create(this@openCamera).createGalleryPictureSelectionModel(
+            chooseMode, cameraTheme, compress, crop, language, requestedOrientation
+        ).forResult(resultListener)
+    }
+}
+
+
+/**
+ * 相机拍照
+ */
+fun Fragment.openCamera(
+    chooseMode: Int = PictureMimeType.ofImage(),    //拍照or录视频
+    cameraTheme: CameraTheme? = null,               //相册样式
+    compress: CameraCompress? = null,               //压缩
+    crop: CameraCrop? = null,                       //裁剪
+    language: Int = LanguageConfig.CHINESE,         //设置语言，默认中文
+    requestedOrientation: Int = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT,//屏幕旋转方向
+    requestCode: Int                               //requestCode
+) {
+    applyCameraAndStoragePermission {
+        PictureSelector.create(this@openCamera)
+            .createGalleryPictureSelectionModel(
+                chooseMode = chooseMode,
+                cameraTheme = cameraTheme,
+                compress = compress,
+                crop = crop,
+                language = language,
+                requestedOrientation = requestedOrientation
             ).forResult(requestCode)
-        }
-    })
+    }
 }
 
 /**
  * 相机拍照
  */
-fun FragmentActivity.openCamera(
+fun Fragment.openCamera(
     chooseMode: Int = PictureMimeType.ofImage(),    //拍照or录视频
     cameraTheme: CameraTheme? = null,               //相册样式
     compress: CameraCompress? = null,               //压缩
@@ -290,68 +367,17 @@ fun FragmentActivity.openCamera(
     requestedOrientation: Int = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT,//屏幕旋转方向
     resultListener: OnResultCallbackListener<LocalMedia>//结果回调
 ) {
-    permissionCheck(cameraAndStoragePermissions, object : OnPermissionsTaskListener() {
-        override fun onPermissionsTask() {
-            PictureSelector.create(this@openCamera).createGalleryPictureSelectionModel(
-                chooseMode, cameraTheme, compress, crop, language, requestedOrientation
+    applyCameraAndStoragePermission {
+        PictureSelector.create(this@openCamera)
+            .createGalleryPictureSelectionModel(
+                chooseMode = chooseMode,
+                cameraTheme = cameraTheme,
+                compress = compress,
+                crop = crop,
+                language = language,
+                requestedOrientation = requestedOrientation
             ).forResult(resultListener)
-        }
-    })
-}
-
-
-/**
- * 相机拍照
- */
-fun Fragment.openCamera(
-    chooseMode: Int = PictureMimeType.ofImage(),    //拍照or录视频
-    cameraTheme: CameraTheme? = null,               //相册样式
-    compress: CameraCompress? = null,               //压缩
-    crop: CameraCrop? = null,                       //裁剪
-    language: Int = LanguageConfig.CHINESE,         //设置语言，默认中文
-    requestedOrientation: Int = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT,//屏幕旋转方向
-    requestCode: Int                               //requestCode
-) {
-    permissionCheck(cameraAndStoragePermissions, object : OnPermissionsTaskListener() {
-        override fun onPermissionsTask() {
-            PictureSelector.create(this@openCamera)
-                .createGalleryPictureSelectionModel(
-                    chooseMode = chooseMode,
-                    cameraTheme = cameraTheme,
-                    compress = compress,
-                    crop = crop,
-                    language = language,
-                    requestedOrientation = requestedOrientation
-                ).forResult(requestCode)
-        }
-    })
-}
-
-/**
- * 相机拍照
- */
-fun Fragment.openCamera(
-    chooseMode: Int = PictureMimeType.ofImage(),    //拍照or录视频
-    cameraTheme: CameraTheme? = null,               //相册样式
-    compress: CameraCompress? = null,               //压缩
-    crop: CameraCrop? = null,                       //裁剪
-    language: Int = LanguageConfig.CHINESE,         //设置语言，默认中文
-    requestedOrientation: Int = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT,//屏幕旋转方向
-    resultListener: OnResultCallbackListener<LocalMedia>//结果回调
-) {
-    permissionCheck(cameraAndStoragePermissions, object : OnPermissionsTaskListener() {
-        override fun onPermissionsTask() {
-            PictureSelector.create(this@openCamera)
-                .createGalleryPictureSelectionModel(
-                    chooseMode = chooseMode,
-                    cameraTheme = cameraTheme,
-                    compress = compress,
-                    crop = crop,
-                    language = language,
-                    requestedOrientation = requestedOrientation
-                ).forResult(resultListener)
-        }
-    })
+    }
 }
 
 
@@ -373,25 +399,23 @@ fun FragmentActivity.openGallery(
     engine: ImageEngine,                    //图片加载框架
     requestCode: Int
 ) {
-    permissionCheck(cameraAndStoragePermissions, object : OnPermissionsTaskListener() {
-        override fun onPermissionsTask() {
-            PictureSelector.create(this@openGallery)
-                .createGalleryPictureSelectionModel(
-                    engine = engine,
-                    chooseMode = chooseMode,
-                    isCamera = isCamera,
-                    maxSelectNum = maxSelectNum,
-                    minSelectNum = minSelectNum,
-                    cameraTheme = cameraTheme,
-                    isOriginalControl = isOriginalControl,
-                    compress = compress,
-                    crop = crop,
-                    isGif = isGif,
-                    language = language,
-                    requestedOrientation = requestedOrientation
-                ).forResult(requestCode)
-        }
-    })
+    applyCameraAndStoragePermission {
+        PictureSelector.create(this@openGallery)
+            .createGalleryPictureSelectionModel(
+                engine = engine,
+                chooseMode = chooseMode,
+                isCamera = isCamera,
+                maxSelectNum = maxSelectNum,
+                minSelectNum = minSelectNum,
+                cameraTheme = cameraTheme,
+                isOriginalControl = isOriginalControl,
+                compress = compress,
+                crop = crop,
+                isGif = isGif,
+                language = language,
+                requestedOrientation = requestedOrientation
+            ).forResult(requestCode)
+    }
 }
 
 /**
@@ -412,25 +436,23 @@ fun Fragment.openGallery(
     engine: ImageEngine,                    //图片加载框架
     requestCode: Int                       //requestCode
 ) {
-    permissionCheck(cameraAndStoragePermissions, object : OnPermissionsTaskListener() {
-        override fun onPermissionsTask() {
-            PictureSelector.create(this@openGallery)
-                .createGalleryPictureSelectionModel(
-                    engine = engine,
-                    chooseMode = chooseMode,
-                    isCamera = isCamera,
-                    maxSelectNum = maxSelectNum,
-                    minSelectNum = minSelectNum,
-                    cameraTheme = cameraTheme,
-                    isOriginalControl = isOriginalControl,
-                    compress = compress,
-                    crop = crop,
-                    isGif = isGif,
-                    language = language,
-                    requestedOrientation = requestedOrientation
-                ).forResult(requestCode)
-        }
-    })
+    applyCameraAndStoragePermission {
+        PictureSelector.create(this@openGallery)
+            .createGalleryPictureSelectionModel(
+                engine = engine,
+                chooseMode = chooseMode,
+                isCamera = isCamera,
+                maxSelectNum = maxSelectNum,
+                minSelectNum = minSelectNum,
+                cameraTheme = cameraTheme,
+                isOriginalControl = isOriginalControl,
+                compress = compress,
+                crop = crop,
+                isGif = isGif,
+                language = language,
+                requestedOrientation = requestedOrientation
+            ).forResult(requestCode)
+    }
 }
 
 
@@ -452,25 +474,23 @@ fun FragmentActivity.openGallery(
     engine: ImageEngine,                    //图片加载框架
     resultListener: OnResultCallbackListener<LocalMedia>//结果回调
 ) {
-    permissionCheck(cameraAndStoragePermissions, object : OnPermissionsTaskListener() {
-        override fun onPermissionsTask() {
-            PictureSelector.create(this@openGallery)
-                .createGalleryPictureSelectionModel(
-                    engine = engine,
-                    chooseMode = chooseMode,
-                    isCamera = isCamera,
-                    maxSelectNum = maxSelectNum,
-                    minSelectNum = minSelectNum,
-                    cameraTheme = cameraTheme,
-                    isOriginalControl = isOriginalControl,
-                    compress = compress,
-                    crop = crop,
-                    isGif = isGif,
-                    language = language,
-                    requestedOrientation = requestedOrientation
-                ).forResult(resultListener)
-        }
-    })
+    applyCameraAndStoragePermission {
+        PictureSelector.create(this@openGallery)
+            .createGalleryPictureSelectionModel(
+                engine = engine,
+                chooseMode = chooseMode,
+                isCamera = isCamera,
+                maxSelectNum = maxSelectNum,
+                minSelectNum = minSelectNum,
+                cameraTheme = cameraTheme,
+                isOriginalControl = isOriginalControl,
+                compress = compress,
+                crop = crop,
+                isGif = isGif,
+                language = language,
+                requestedOrientation = requestedOrientation
+            ).forResult(resultListener)
+    }
 }
 
 /**
@@ -491,25 +511,23 @@ fun Fragment.openGallery(
     engine: ImageEngine,                    //图片加载框架
     resultListener: OnResultCallbackListener<LocalMedia>//结果回调
 ) {
-    permissionCheck(cameraAndStoragePermissions, object : OnPermissionsTaskListener() {
-        override fun onPermissionsTask() {
-            PictureSelector.create(this@openGallery)
-                .createGalleryPictureSelectionModel(
-                    engine = engine,
-                    chooseMode = chooseMode,
-                    isCamera = isCamera,
-                    maxSelectNum = maxSelectNum,
-                    minSelectNum = minSelectNum,
-                    cameraTheme = cameraTheme,
-                    isOriginalControl = isOriginalControl,
-                    compress = compress,
-                    crop = crop,
-                    isGif = isGif,
-                    language = language,
-                    requestedOrientation = requestedOrientation
-                ).forResult(resultListener)
-        }
-    })
+    applyCameraAndStoragePermission {
+        PictureSelector.create(this@openGallery)
+            .createGalleryPictureSelectionModel(
+                engine = engine,
+                chooseMode = chooseMode,
+                isCamera = isCamera,
+                maxSelectNum = maxSelectNum,
+                minSelectNum = minSelectNum,
+                cameraTheme = cameraTheme,
+                isOriginalControl = isOriginalControl,
+                compress = compress,
+                crop = crop,
+                isGif = isGif,
+                language = language,
+                requestedOrientation = requestedOrientation
+            ).forResult(resultListener)
+    }
 }
 
 
@@ -586,26 +604,23 @@ val LocalMedia.getMediaPath: String
  * 清除拍照缓存
  */
 fun FragmentActivity.cleanPictureCache() {
-    permissionCheck(storagePermissions, object : OnPermissionsTaskListener() {
-        override fun onPermissionsTask() {
-            Thread {
-                PictureFileUtils.deleteAllCacheDirFile(this@cleanPictureCache)
-                FileUtils.deleteImageCacheFile(this@cleanPictureCache)
-            }
+    applyStoragePermission {
+        Thread {
+            PictureFileUtils.deleteAllCacheDirFile(this@cleanPictureCache)
+            Utils.deleteImageCacheFile(this@cleanPictureCache)
         }
-    })
+    }
 }
 
 /**
  * 清除拍照缓存
  */
 fun Fragment.cleanPictureCache() {
-    permissionCheck(storagePermissions, object : OnPermissionsTaskListener() {
-        override fun onPermissionsTask() {
-            Thread {
-                PictureFileUtils.deleteAllCacheDirFile(requireContext())
-                FileUtils.deleteImageCacheFile(requireContext())
-            }
+    applyStoragePermission {
+        Thread {
+            PictureFileUtils.deleteAllCacheDirFile(requireContext())
+            Utils.deleteImageCacheFile(requireContext())
         }
-    })
+    }
+
 }
