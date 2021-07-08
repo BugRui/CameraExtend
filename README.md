@@ -1,6 +1,6 @@
 # Kotlin CameraExtend   [![version](https://jitpack.io/v/BugRui/CameraExtend.svg)](https://jitpack.io/#BugRui/CameraExtend/1.1.4)
 ## Android 相机拍照，相册选择 Camera to take pictures ,Photo album to choose 
-基于PictureSelector扩展封装，使用方式更加便捷舒适,已封装了权限申请框架基于PermissionsDispatcher封装的AndroidPermission,调用拍照时会自动申请
+基于PictureSelector扩展封装，使用方式更加便捷舒适,已封装了权限申请框架基于PermissionsX封装的AndroidPermission,调用拍照时会自动申请
 ### 集成
 #### Step 1. Add the JitPack repository to your build file
 ```
@@ -13,7 +13,7 @@ allprojects {
 ```
 #### Step 2. Add the dependency
 ```
-implementation 'com.github.BugRui:CameraExtend:1.1.4'
+implementation 'com.github.BugRui:CameraExtend:1.1.5'
 ```
 #### Step 3. Need to be in AndroidManifest.xml add permission
 ```
